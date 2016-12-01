@@ -1,0 +1,9 @@
+h1:not(.lass, .less) {
+  color: $color-blue;
+  font-size: 3em;
+
+  & a {
+    text-decoration: underline;
+    color: inherit;
+  }
+}

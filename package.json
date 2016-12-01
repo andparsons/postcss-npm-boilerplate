@@ -3,12 +3,20 @@
   "version": "1.0.0",
   "description": "A straightforward boilerplate for using the PostCSS ecosystem via npm scripts.",
   "scripts": {
-    "postinstall": "npm run watch",
-    "watch": "onchange 'src/*.css' -- npm run build",
-    "minify": "postcss -u cssnano dist/main.css -o dist/main.min.css",
-    "cleanup": "del-cli dist/main.css",
-    "build:css": "postcss -c postcss.config.json",
-    "build": "npm run build:css && npm run minify && npm run cleanup"
+    "postinstall": "echo 'install success'",
+    "watch:styles": "postcss --local-plugins -u postcss-import -u postcss-simple-vars -u postcss-cssnext --postcss-cssnext--browsers \"last 2 versions\" -p postcss-scss -m file -o dist/_/uncompressed/s.css src/styles/main.scss & postcss -u cssnano dist/_/uncompressed/s.css -o dist/_/s.css -w",
+    "compile:styles": "postcss --local-plugins -u postcss-import -u postcss-simple-vars -u postcss-cssnext --postcss-cssnext--browsers \"last 2 versions\" -p postcss-scss -m file -o dist/_/uncompressed/s.css src/styles/main.scss",
+    "minify:styles": "postcss -u cssnano dist/_/uncompressed/s.css -o dist/_/s.css | gzip > dist/_/s.css.gz",
+    "build:styles": "npm run compile:styles & npm run minify:styles",
+    "compile:scripts": "echo 'webpack rollup babel'",
+    "minify:scripts": "cp src/scripts/main.js dist/_/v.js | gzip > dist/_/v.js.gz",
+    "build:scripts": "npm run compile:scripts & npm run minify:scripts",
+    "watch:templates": "pug src/templates/index.pug -o dist -w",
+    "compile:templates": "pug --pretty src/templates/index.pug -o dist/_/uncompressed/ & pug src/templates/index.pug -o dist",
+    "minify:templates": "pug src/templates/index.pug -o dist | gzip > dist/index.html.gz",
+    "build:templates": "npm run compile:templates & npm run minify:templates",
+    "build": "npm run build:styles & npm run build:scripts & npm run build:templates",
+    "bs": "browser-sync start --server 'dist' --files 'dist/_/*.css' --plugins bs-html-injector?files[]=dist/*.html & npm run watch:styles & npm run watch:templates"
   },
   "repository": {
     "type": "git",
@@ -26,12 +34,25 @@
   },
   "homepage": "https://github.com/thefoxis/postcss-npm-boilerplate#readme",
   "devDependencies": {
+    "browser-sync": "^2.18.2",
+    "bs-html-injector": "^3.0.3",
     "cssnano": "^3.7.1",
     "del-cli": "^0.2.0",
+    "google-closure-compiler-js": "^20161024.0.0",
     "onchange": "^2.5.0",
     "postcss-cli": "^2.5.2",
     "postcss-cssnext": "^2.6.0",
     "postcss-import": "^8.1.2",
-    "postcss-simple-vars": "^2.0.0"
+    "postcss-mixins": "^5.4.0",
+    "postcss-nested": "^1.0.0",
+    "postcss-scss": "^0.4.0",
+    "postcss-simple-extend": "^1.0.0",
+    "postcss-simple-vars": "^2.0.0",
+    "pug-cli": "^1.0.0-alpha6",
+    "stylelint": "^7.6.0",
+    "uglify-js": "^2.7.5"
+  },
+  "dependencies": {
+    "vue": "^2.1.3"
   }
 }
